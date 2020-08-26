@@ -66,18 +66,18 @@
             // sphere.material = mat;
             // scene.activeCamera.attachControl(canvas);
            
-           BABYLON.SceneLoader.Append("assets/cushion/", "503 Cushions.gltf", scene, function (scene) {
-                // Create a default arc rotate camera and light.
-               //  scene.createDefaultCameraOrLight(true, true, true);
+         //   BABYLON.SceneLoader.Append("assets/cushion/", "503 Cushions.gltf", scene, function (scene) {
+         //        // Create a default arc rotate camera and light.
+         //       //  scene.createDefaultCameraOrLight(true, true, true);
 
-                // The default camera looks at the back of the asset.
-                // Rotate the camera by 180 degrees to the front of the asset.
-               //  scene.activeCamera.alpha += Math.PI;
-            });
-         //   BABYLON.SceneLoader.ImportMesh("", "https://cdn.glitch.com/c550015c-c69f-4fe1-a341-b48b9d2bae03%2FAstronaut.glb?v=1598414109467", "", scene, function (meshes, particleSystems, skeletons) {
-         //  // do something with the meshes and skeletons
-         //  // particleSystems are always null for glTF assets
-         //  });
+         //        // The default camera looks at the back of the asset.
+         //        // Rotate the camera by 180 degrees to the front of the asset.
+         //       //  scene.activeCamera.alpha += Math.PI;
+         //    });
+           BABYLON.SceneLoader.ImportMesh("", "assets/waterbottle/", "WaterBottle.gltf", scene, function (meshes, particleSystems, skeletons) {
+          // do something with the meshes and skeletons
+          // particleSystems are always null for glTF assets
+          });
             return scene;
          };
          var scene = createScene();
