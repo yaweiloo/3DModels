@@ -22,11 +22,11 @@
             var scene = new BABYLON.Scene(engine);
             scene.clearColor = new BABYLON.Color3(1, 1.0, 1.0);
             // var camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2, 2, new BABYLON.Vector3(0,0,0), scene);
-            var camera = new BABYLON.ArcRotateCamera("Camera", 3 * Math.PI / 2-0.3, Math.PI / 2-0.2, 10, BABYLON.Vector3.Zero(), scene);
+            var camera = new BABYLON.ArcRotateCamera("Camera", 3 * Math.PI / 2, Math.PI / 2, 10, BABYLON.Vector3.Zero(), scene);
             camera.attachControl(canvas, true);
             // Add lights to the scene
             var light1 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
-            //var light2 = new BABYLON.PointLight("light2", new BABYLON.Vector3(0, 0, 10), scene);
+            var light2 = new BABYLON.PointLight("light2", new BABYLON.Vector3(0, 0, 5), scene);
 
             // Add and manipulate meshes in the scene
             // var sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter:2}, scene);
@@ -36,6 +36,8 @@
              sphere.position = new BABYLON.Vector3(-5, 0, 0);
             sphere.scaling.y = -1
             sphere.scaling.x = -1
+            sphere.rotation = new BABYLON.Vector3(0, Math.PI, 0);
+            
             // Create material from image with alpha
             var material0 = new BABYLON.StandardMaterial("girl", scene);
             // mat.diffuseTexture = new BABYLON.Texture("https://upload.wikimedia.org/wikipedia/commons/8/87/Alaskan_Malamute%2BBlank.png", scene);
@@ -45,7 +47,8 @@
             var box = BABYLON.Mesh.CreateBox("box", 2.0, scene);
             box.position = new BABYLON.Vector3(5, 0, 0); 
             box.scaling.x = 800/450
-            
+            box.rotation = new BABYLON.Vector3(0, Math.PI, 0);
+
             var multimat = new BABYLON.MultiMaterial("multi", scene);
             multimat.subMaterials.push(material0);
            
@@ -58,7 +61,7 @@
             var material1 = new BABYLON.StandardMaterial("mat1", scene);
             material1.emissiveColor = new BABYLON.Color3(0, 0, 1);
             multimat.subMaterials.push(material1);
-                       var material2 = new BABYLON.StandardMaterial("mat2", scene);
+            var material2 = new BABYLON.StandardMaterial("mat2", scene);
             material2.diffuseColor = new BABYLON.Color3(0, 0, 1);
             multimat.subMaterials.push(material2);
             new BABYLON.SubMesh(0, 0, verticesCount, 5016, 8001, sphere);
@@ -74,10 +77,13 @@
          //        // Rotate the camera by 180 degrees to the front of the asset.
          //       //  scene.activeCamera.alpha += Math.PI;
          //    });
-           BABYLON.SceneLoader.ImportMesh("", "assets/waterbottle/", "WaterBottle.gltf", scene, function (meshes, particleSystems, skeletons) {
+            BABYLON.SceneLoader.ImportMesh("", "assets/waterbottle/", "WaterBottle.gltf", scene, function (meshes, particleSystems, skeletons) {
           // do something with the meshes and skeletons
           // particleSystems are always null for glTF assets
-          });
+               scene.activeCamera.alpha += Math.PI;
+               meshes[0].scaling.scaleInPlace(10.0);
+               meshes[0].rotate(BABYLON.Axis.Y, Math.PI / 3, BABYLON.Space.WORLD);
+            });
             return scene;
          };
          var scene = createScene();
