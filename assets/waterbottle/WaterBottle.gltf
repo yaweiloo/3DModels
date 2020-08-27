@@ -82,7 +82,7 @@
       "uri": "WaterBottle_baseColor.png"
     },
     {
-      "uri": "WaterBottle_image_emissive.png"
+      "uri": "WaterBottle_image.png"
     }
   ],
   "meshes": [
@@ -115,13 +115,7 @@
         1.0
       ],
       "emissiveTexture": {
-        "index": 1,
-        "extensions": {
-          "KHR_texture_transform": {
-            "offset": [0, 1],
-            "scale": [0.5, 0.5]
-          }
-        }
+        "index": 1
       },
       "name": "BottleMat"
     }
@@ -153,11 +147,5 @@
     {
       "source": 1
     }
-  ],
-  "extensionsUsed":[
-    "KHR_texture_transform"
-  ],
-  "extensionsRequired":[
-    "KHR_texture_transform"
   ]
 }
