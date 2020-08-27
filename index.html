@@ -62,18 +62,22 @@
             sphere.subMeshes = [];
             var verticesCount = sphere.getTotalVertices();
             var indicesCount = sphere.getTotalIndices();
-            new BABYLON.SubMesh(1, 0, verticesCount, 0, 5016, sphere);
+            
             var material1 = new BABYLON.StandardMaterial("mat1", scene);
             material1.emissiveColor = new BABYLON.Color3(0, 0, 1);
             multimat.subMaterials.push(material1);
             var material2 = new BABYLON.StandardMaterial("mat2", scene);
             material2.diffuseColor = new BABYLON.Color3(0, 0, 1);
             multimat.subMaterials.push(material2);
-            new BABYLON.SubMesh(0, 0, verticesCount, 5016, 8001, sphere);
-            new BABYLON.SubMesh(2, 0, verticesCount, 13017, indicesCount-13017, sphere);
-         
-         //    var material_bottle = new BABYLON.StandardMaterial("bottle_image", scene);
-         //   material_bottle.emissiveTexture = material_bottle.diffuseTexture = new BABYLON.Texture("https://upload.wikimedia.org/wikipedia/commons/f/fe/Az_girl_with_flowers._e-citizen.jpg", scene);
+            var material3 = new BABYLON.StandardMaterial("mat3", scene);
+            material3.diffuseTexture = material3.emissiveTexture = new BABYLON.Texture("assets/waterbottle/WaterBottle_image.png", scene);
+            material3.diffuseTexture.hasAlpha = true; 
+            multimat.subMaterials.push(material3);
+ 
+            new BABYLON.SubMesh(1, 0, verticesCount, 0, indicesCount, sphere);
+            // new BABYLON.SubMesh(0, 0, verticesCount, 5016, 8001, sphere);
+            // new BABYLON.SubMesh(2, 0, verticesCount, 13017, indicesCount-13017, sphere);
+            new BABYLON.SubMesh(3, 0, verticesCount, 0, indicesCount, sphere);
 
             BABYLON.SceneLoader.ImportMesh("", "assets/waterbottle/", "WaterBottle.gltf", scene, function (meshes, particleSystems, skeletons) {
           // do something with the meshes and skeletons
@@ -85,6 +89,7 @@
             });
             return scene;
          };
+         
          var scene = createScene();
          engine.runRenderLoop(function() {
             scene.render();
