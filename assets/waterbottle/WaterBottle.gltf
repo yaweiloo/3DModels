@@ -106,6 +106,14 @@
           "index": 0
         }
       },
+      "emissiveFactor": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "emissiveTexture": {
+        "index": 0
+      },
       "name": "BottleMat"
     }
   ],
