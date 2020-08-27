@@ -79,7 +79,7 @@
   ],
   "images": [
     {
-      "uri": "WaterBottle_baseColor.png"
+      "uri": "WaterBottle_baseColor1.png"
     },
     {
       "uri": "WaterBottle_occlusionRoughnessMetallic.png"
@@ -88,7 +88,7 @@
       "uri": "WaterBottle_normal.png"
     },
     {
-      "uri": "WaterBottle_image.png"
+      "uri": "WaterBottle_baseColor1.png"
     }
   ],
   "meshes": [
