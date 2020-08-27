@@ -76,7 +76,7 @@
             // new BABYLON.SubMesh(2, 0, verticesCount, 13017, indicesCount-13017, sphere);
             new BABYLON.SubMesh(3, 0, verticesCount, 0, indicesCount, sphere);
 
-            BABYLON.SceneLoader.ImportMesh("", "assets/waterbottle/", "WaterBottle.gltf", scene, function (meshes, particleSystems, skeletons) {
+            BABYLON.SceneLoader.ImportMesh("", "assets/waterbottle/", "WaterBottle.glb", scene, function (meshes, particleSystems, skeletons) {
           // do something with the meshes and skeletons
           // particleSystems are always null for glTF assets
                var bottle = meshes[0];
