@@ -82,7 +82,7 @@
       "uri": "WaterBottle_baseColor.png"
     },
     {
-      "uri": "WaterBottle_image.png"
+      "uri": "WaterBottle_image_emissive.png"
     }
   ],
   "meshes": [
