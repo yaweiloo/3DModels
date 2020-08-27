@@ -83,7 +83,7 @@
                scene.activeCamera.alpha += Math.PI;
                bottle.scaling.scaleInPlace(20.0);
                bottle.rotate(BABYLON.Axis.Y, Math.PI / 3, BABYLON.Space.WORLD);
-               bottle.position = new BABYLON.Vector3(-5, 0, 0); 
+               bottle.position = new BABYLON.Vector3(5, 0, 0); 
 
                var decalMaterial = new BABYLON.StandardMaterial("decalMat", scene);
                decalMaterial.diffuseTexture = new BABYLON.Texture("assets/waterbottle/girl.png", scene);
