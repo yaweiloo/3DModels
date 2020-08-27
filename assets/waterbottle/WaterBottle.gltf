@@ -89,6 +89,9 @@
     },
     {
       "uri": "WaterBottle_baseColor.png"
+    },
+    {
+      "uri": "WaterBottle_image.png"
     }
   ],
   "meshes": [
@@ -132,6 +135,9 @@
       "emissiveTexture": {
         "index": 3
       },
+      "diffuseTexture": {
+        "index": 4
+      },
       "name": "BottleMat"
     }
   ],
@@ -167,6 +173,9 @@
     },
     {
       "source": 3
+    },
+    {
+      "source": 4
     }
   ]
 }
