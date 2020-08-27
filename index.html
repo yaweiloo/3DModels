@@ -24,6 +24,11 @@
             // var camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2, 2, new BABYLON.Vector3(0,0,0), scene);
             var camera = new BABYLON.ArcRotateCamera("Camera", 3 * Math.PI / 2, Math.PI / 2, 10, BABYLON.Vector3.Zero(), scene);
             camera.attachControl(canvas, true);
+            camera.minZ = 0.1;
+            camera.maxZ = 1000;
+            camera.lowerRadiusLimit = 0.1;
+            camera.upperRadiusLimit = 15;
+            camera.wheelPrecision = 50;
             // Add lights to the scene
             var light1 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
             var light2 = new BABYLON.PointLight("light2", new BABYLON.Vector3(0, 0, 5), scene);
@@ -66,23 +71,17 @@
             multimat.subMaterials.push(material2);
             new BABYLON.SubMesh(0, 0, verticesCount, 5016, 8001, sphere);
             new BABYLON.SubMesh(2, 0, verticesCount, 13017, indicesCount-13017, sphere);
-            // sphere.material = mat;
-            // scene.activeCamera.attachControl(canvas);
-           
-         //   BABYLON.SceneLoader.Append("assets/cushion/", "503 Cushions.gltf", scene, function (scene) {
-         //        // Create a default arc rotate camera and light.
-         //       //  scene.createDefaultCameraOrLight(true, true, true);
+         
+            var material_bottle = new BABYLON.StandardMaterial("bottle_image", scene);
+           material_bottle.emissiveTexture = material_bottle.diffuseTexture = new BABYLON.Texture("https://upload.wikimedia.org/wikipedia/commons/f/fe/Az_girl_with_flowers._e-citizen.jpg", scene);
 
-         //        // The default camera looks at the back of the asset.
-         //        // Rotate the camera by 180 degrees to the front of the asset.
-         //       //  scene.activeCamera.alpha += Math.PI;
-         //    });
             BABYLON.SceneLoader.ImportMesh("", "assets/waterbottle/", "WaterBottle.gltf", scene, function (meshes, particleSystems, skeletons) {
           // do something with the meshes and skeletons
           // particleSystems are always null for glTF assets
                scene.activeCamera.alpha += Math.PI;
                meshes[0].scaling.scaleInPlace(10.0);
                meshes[0].rotate(BABYLON.Axis.Y, Math.PI / 3, BABYLON.Space.WORLD);
+               meshes[0].material = material_bottle; 
             });
             return scene;
          };
