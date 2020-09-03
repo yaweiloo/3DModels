@@ -1,0 +1,144 @@
+{
+  "asset": {
+    "generator": "Microsoft GLTF Exporter 2.8.3.20",
+    "version": "2.0"
+  },
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5125,
+      "count": 77340,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 77340,
+      "type": "VEC3",
+      "max": [
+        99.51419830322266,
+        53.43149948120117,
+        101.8489990234375
+      ],
+      "min": [
+        -53.425201416015625,
+        -53.42639923095703,
+        -0.010900000110268593
+      ]
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 77340,
+      "type": "VEC3"
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteOffset": 0,
+      "byteLength": 309360,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 309360,
+      "byteLength": 928080,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 1237440,
+      "byteLength": 928080,
+      "target": 34962
+    }
+  ],
+  "buffers": [
+    {
+      "uri": "Mug_data.bin",
+      "byteLength": 2165520
+    }
+  ],
+  "materials": [
+    {
+      "pbrMetallicRoughness": {},
+      "doubleSided": true,
+      "extensions": {
+        "KHR_materials_pbrSpecularGlossiness": {
+          "diffuseFactor": [
+            1,
+            0.21576441824436188,
+            0.014310519210994244,
+            1
+          ],
+          "specularFactor": [
+            0,
+            0,
+            0
+          ],
+          "glossinessFactor": 0.501960813999176
+        }
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 2,
+            "POSITION": 1
+          },
+          "indices": 0,
+          "material": 0
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "children": [
+        1
+      ],
+      "scale": [
+        0.0010000000474974513,
+        0.0010000000474974513,
+        0.0010000000474974513
+      ],
+      "name": "root"
+    },
+    {
+      "translation": [
+        -22.58799934387207,
+        0.010195099748671055,
+        0.0017891200259327888
+      ],
+      "rotation": [
+        0.7071124315261841,
+        -0.000016503130609635264,
+        0.000005330913609213894,
+        -0.7071011066436768
+      ],
+      "scale": [
+        0.9801819920539856,
+        0.980181872844696,
+        0.980181872844696
+      ],
+      "mesh": 0
+    }
+  ],
+  "scenes": [
+    {
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "scene": 0,
+  "extensionsUsed": [
+    "KHR_materials_pbrSpecularGlossiness"
+  ],
+  "extensionsRequired": [
+    "KHR_materials_pbrSpecularGlossiness"
+  ]
+}
