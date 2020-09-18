@@ -12,765 +12,105 @@
 
     <!-- import the webpage's javascript file -->
 
-    <canvas id="canvas" width="512" height="512"></canvas>
-
-    <!-- vertex shader -->
-    <script id="vertex-shader-2d" type="x-shader/x-vertex">
-      attribute vec2 a_position;
-      attribute vec2 a_texCoord;
-
-      uniform mat3 uTransformMatrix;
-      varying vec2 v_texCoord;
-
-      void main() {
-         vec2 position = (uTransformMatrix * vec3(a_position, 1)).xy;
-         gl_Position = vec4(position, 0, 1);
-         v_texCoord = a_texCoord;
-      }
-    </script>
-
-    <!-- fragment shader -->
-    <script id="fragment-shader-2d" type="x-shader/x-fragment">
-      precision mediump float;
-
-      // our textures
-      uniform sampler2D u_image0;
-
-      // the texCoords passed in from the vertex shader.
-      varying vec2 v_texCoord;
-
-      void main() {
-        vec4 color0 = texture2D(u_image0, v_texCoord);
-        gl_FragColor = color0;
-      }
-    </script>
-
     <script src="scripts/babylon.max.js"></script>
     <script src="scripts/babylonjs.loaders.min.js"></script>
     <script src="scripts/webgl-utils.js"></script>
     <script src="scripts/pep.js"></script> 
-   
+    <style>
+      canvas {width: 100%; height: 100%;}
+   </style>
   </head>
   <body>
 
     <script>
-      function loadImage(url, callback) {
-        var image = new Image();
-        requestCORSIfNotSameOrigin(image, url);
-        image.src = url;
-        image.onload = callback;
-        return image;
-      }
+      var canvas = document.getElementById("canvas");
+      var engine = new BABYLON.Engine(canvas, true);
+      var createScene = function() {
+      var scene = new BABYLON.Scene(engine);
+      scene.clearColor = new BABYLON.Color3(0.9, 0.9, 0.9);
 
-      function renderMesh(modelMeshUrl, modelUVTextureUrl, imageUrl, callback) {
-        var images = [];
-        var imagesToLoad = imageUrl.length;
-        var uvTextures = [];
-        var uvTexturesToLoad = modelUVTextureUrl.length;
-              
-        // Called each time an image finished
-        // loading.
-        var onImageLoad = function() {
-          --imagesToLoad;
-          // If all the images are loaded call the callback.
-          if (imagesToLoad === 0) {
-            var imageNew = [];
-            imageNew = callback(images, uvTextures);
+        var camera = new BABYLON.ArcRotateCamera(
+          "Camera",
+          Math.PI / 2-0.1,
+          Math.PI / 2 ,
+          0.1,
+          BABYLON.Vector3(0.0,0.0,0.0),
+          scene
+        );
+        camera.attachControl(canvas, true);
+        camera.minZ = 0.01;
+        camera.maxZ = 1000;
+        camera.lowerRadiusLimit = 0.25;
+        camera.upperRadiusLimit = 55;
+        camera.wheelPrecision = 100;
+        // Add lights to the scene
+        var light1 = new BABYLON.HemisphericLight(
+          "light1",
+          new BABYLON.Vector3(0, 1, 1),
+          scene
+        );
+        var light2 = new BABYLON.HemisphericLight(
+          "light2",
+          new BABYLON.Vector3(-10, -10, -10),
+          scene
+        );
+        
+        BABYLON.SceneLoader.OnPluginActivatedObservable.add(function (plugin) {
+            plugin.animationStartMode = BABYLON.GLTFLoaderAnimationStartMode.NONE;
+        }, undefined, undefined, undefined, true);
 
-            // Draw model and new texture
-
-            var canvas = document.getElementById("canvas");
-            var engine = new BABYLON.Engine(canvas, true);
-            var createScene = function() {
-            var scene = new BABYLON.Scene(engine);
-            scene.clearColor = new BABYLON.Color3(0.9, 0.9, 0.9);
-
-              var camera = new BABYLON.ArcRotateCamera(
-                "Camera",
-                Math.PI / 2-0.1,
-                Math.PI / 2 ,
-                0.1,
-                BABYLON.Vector3(0.0,0.0,0.0),
-                scene
-              );
-              camera.attachControl(canvas, true);
-              camera.minZ = 0.01;
-              camera.maxZ = 1000;
-              camera.lowerRadiusLimit = 0.25;
-              camera.upperRadiusLimit = 55;
-              camera.wheelPrecision = 100;
-              // Add lights to the scene
-              var light1 = new BABYLON.HemisphericLight(
-                "light1",
-                new BABYLON.Vector3(0, 1, 1),
-                scene
-              );
-              var light2 = new BABYLON.HemisphericLight(
-                "light2",
-                new BABYLON.Vector3(-10, -10, -10),
-                scene
-              );
-              
-              BABYLON.SceneLoader.OnPluginActivatedObservable.add(function (plugin) {
-                  plugin.animationStartMode = BABYLON.GLTFLoaderAnimationStartMode.NONE;
-              }, undefined, undefined, undefined, true);
-
-              BABYLON.SceneLoader.ImportMesh(
-                "",
-                modelMeshUrl,            
-                "box_folding_animation.gltf",
-                scene,
-                function(newMeshes, particleSystems, skeleton, animationGroups) {
-                  // translate parent mesh (dummy 0)
-                  //newMeshes[0].translate(BABYLON.Axis.X, 0.0, BABYLON.Space.WORLD);
-                  
-                  // box mesh
-                  // var box_mesh = newMeshes[4];
-                  // box_mesh.material = null;
-                  // var newMaterial1 = new BABYLON.StandardMaterial(
-                  //   "newMaterial1",
-                  //   scene
-                  // );
-                  // newMaterial1.diffuseTexture = new BABYLON.Texture(
-                  //   imageNew[0].src,
-                  //   scene
-                  // );
-                  // box_mesh.material = newMaterial1;
-           
-                  var onPointerDown = function (evt) {
-                      if (evt.button !== 0) {
-                        return;
-                      }
-                      var animationGroup = animationGroups[0];
-                      // check if we are under a mesh
-                      var pickInfo = scene.pick(scene.pointerX, scene.pointerY, function (mesh) { return true; });
-                      if (pickInfo.hit) {
-                       //console.log( pickInfo.pickedPoint);                     
-                       animationGroup.start();
-                      }
-                  }
-
-                  var canvas = engine.getRenderingCanvas();
-                  canvas.addEventListener("pointerdown", onPointerDown, false);
-
-                  scene.onDispose = function () {
-                    canvas.removeEventListener("pointerdown", onPointerDown);
-                  }
-
+        BABYLON.SceneLoader.ImportMesh(
+          "",
+          "assets/e-cigarette/",            
+          "box_folding_animation.gltf",
+          scene,
+          function(newMeshes, particleSystems, skeleton, animationGroups) {
+            // translate parent mesh (dummy 0)
+            //newMeshes[0].translate(BABYLON.Axis.X, 0.0, BABYLON.Space.WORLD);
+            
+            // box mesh
+            // var box_mesh = newMeshes[4];
+            // box_mesh.material = null;
+            // var newMaterial1 = new BABYLON.StandardMaterial(
+            //   "newMaterial1",
+            //   scene
+            // );
+            // newMaterial1.diffuseTexture = new BABYLON.Texture(
+            //   imageNew[0].src,
+            //   scene
+            // );
+            // box_mesh.material = newMaterial1;
+      
+            var onPointerDown = function (evt) {
+                if (evt.button !== 0) {
+                  return;
                 }
-              );
+                var animationGroup = animationGroups[0];
+                // check if we are under a mesh
+                var pickInfo = scene.pick(scene.pointerX, scene.pointerY, function (mesh) { return true; });
+                if (pickInfo.hit) {
+                  //console.log( pickInfo.pickedPoint);                     
+                  animationGroup.start();
+                }
+            }
 
-              return scene;
-            };
+            var canvas = engine.getRenderingCanvas();
+            canvas.addEventListener("pointerdown", onPointerDown, false);
 
-            var scene = createScene();
-            engine.runRenderLoop(function() {
-              scene.render();
-            });
-          } 
-        };
+            scene.onDispose = function () {
+              canvas.removeEventListener("pointerdown", onPointerDown);
+            }
 
-        for (var ii = 0; ii < imageUrl.length; ++ii) {
-          var uvTexture = loadImage(modelUVTextureUrl[ii], 0);
-          uvTextures.push(uvTexture);
-          var image = loadImage(imageUrl[ii], onImageLoad);
-          images.push(image);
-        }
-        
-      }
- 
-      function createTexture(gl, image){
-        var texture = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-
-        // Set the parameters so we can render any size image.
-        gl.texParameteri(
-          gl.TEXTURE_2D,
-          gl.TEXTURE_WRAP_S,
-          gl.CLAMP_TO_EDGE
-        );
-        gl.texParameteri(
-          gl.TEXTURE_2D,
-          gl.TEXTURE_WRAP_T,
-          gl.CLAMP_TO_EDGE
-        );
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-
-        // Upload the image into the texture.
-        gl.texImage2D(
-          gl.TEXTURE_2D,
-          0,
-          gl.RGBA,
-          gl.RGBA,
-          gl.UNSIGNED_BYTE,
-          image
-        );
-        
-        return texture;
-      }
-      
-      function render(images, uvTextures) {
-        // Get A WebGL context
-        /** @type {HTMLCanvasElement} */
-        var canvas = document.querySelector("#canvas");
-        var gl = canvas.getContext("webgl");
-        if (!gl) {
-          return;
-        }
-
-        var imagesNew = [];
-
-         // setup GLSL program
-          var program = webglUtils.createProgramFromScripts(gl, [
-            "vertex-shader-2d",
-            "fragment-shader-2d"
-          ]);
-          gl.useProgram(program);
-
-        
-        for (var j = 0; j < images.length; j++) {
-          var isFlipPictureY = 1.0;
-          var isFlipPictureX = -1.0;
-          // model texture
-          var texture_width = uvTextures[j].width;
-          var texture_height = uvTextures[j].height;
-          document.getElementById("canvas").width = texture_width;
-          document.getElementById("canvas").height = texture_height;
-
-          // photo texture
-          var picture_width = images[j].width;
-          var picture_height = images[j].height;
-
-          // for box model
-          var picture_size = picture_width;
-          var picture_tl_x = 0.0;
-          var picture_tl_y = 0.0;
-          var picture_br_x = picture_tl_x + picture_size;
-          var picture_br_y = picture_tl_y + picture_height;
-          if (j == 1){
-            isFlipPictureX = 1.0;         
           }
+        );
 
-          console.log("picture_size:" + picture_size);
-          console.log("picture_width:" + picture_width);
-          console.log("picture_height:" + picture_height);
-          console.log("texture_width:" + texture_width);
-          console.log("texture_height:" + texture_height);
-
-         
-          // look up where the vertex data needs to go.
-          var positionLocation = gl.getAttribLocation(program, "a_position");
-          var texcoordLocation = gl.getAttribLocation(program, "a_texCoord");
-          var matrixLocation = gl.getUniformLocation(
-            program,
-            "uTransformMatrix"
-          );
-
-          var x1 = -1.0;
-          var x2 = 1.0;
-          var y1 = 1.0;
-          var y2 = -1.0;
-
-          // Create a buffer to put three 2d clip space points in
-          var positionBuffer = gl.createBuffer();
-          // Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
-          gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-
-          gl.bufferData(
-            gl.ARRAY_BUFFER,
-            new Float32Array([x1, y1, x2, y1, x1, y2, x1, y2, x2, y1, x2, y2]),
-            gl.STATIC_DRAW
-          );
-
-          // provide texture coordinates for the rectangle.
-          var texcoordBuffer = gl.createBuffer();
-          gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
-          gl.bufferData(
-            gl.ARRAY_BUFFER,
-            new Float32Array([
-              0.0,
-              0.0,
-              1.0,
-              0.0,
-              0.0,
-              1.0,
-              0.0,
-              1.0,
-              1.0,
-              0.0,
-              1.0,
-              1.0
-            ]),
-            gl.STATIC_DRAW
-          );
-
-          var texcoordX1 = picture_tl_x / picture_width;
-          var texcoordX2 = picture_br_x / picture_width;
-          var texcoordY1 = picture_tl_y / picture_height;
-          var texcoordY2 = picture_br_y / picture_height;
-          var poscoordX1 = texcoordX1 * 2.0 - 1.0;
-          var poscoordX2 = texcoordX2 * 2.0 - 1.0;
-          var poscoordY1 = texcoordY2 * 2.0 - 1.0;
-          var poscoordY2 = texcoordY1 * 2.0 - 1.0;
-
-          var positionBuffer2 = gl.createBuffer();
-          // Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
-          gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer2);
-          x1 = -1.0;
-          x2 = 1.0;
-          y1 = 1.0;
-          y2 = -1.0;
-          gl.bufferData(
-            gl.ARRAY_BUFFER,
-            new Float32Array([
-              poscoordX1,
-              poscoordY1,
-              poscoordX2,
-              poscoordY1,
-              poscoordX1,
-              poscoordY2,
-              poscoordX1,
-              poscoordY2,
-              poscoordX2,
-              poscoordY1,
-              poscoordX2,
-              poscoordY2
-            ]),
-            gl.STATIC_DRAW
-          );
-
-          var texcoordBuffer2 = gl.createBuffer();
-          gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer2);
-          gl.bufferData(
-            gl.ARRAY_BUFFER,
-            new Float32Array([
-              texcoordX1,
-              texcoordY1,
-              texcoordX2,
-              texcoordY1,
-              texcoordX1,
-              texcoordY2,
-              texcoordX1,
-              texcoordY2,
-              texcoordX2,
-              texcoordY1,
-              texcoordX2,
-              texcoordY2
-            ]),
-            gl.STATIC_DRAW
-          );
-
-          // create textures for model texture and image, add to array
-          var textures = [];
-          // for model uv texture
-          texture1 = createTexture(gl, uvTextures[j]);
-          textures.push(texture1);
-          // for image
-          texture2 = createTexture(gl, images[j]);
-          textures.push(texture2);
-          
-
-          // lookup the sampler locations.
-          var u_image0Location = gl.getUniformLocation(program, "u_image0");
-
-          // console.log(gl.canvas.width);
-          // console.log(gl.canvas.height);
-
-          // 1. Draw photo texture to framebuffer of target texture
-
-          // create texture for framebuffer to render to
-
-          // For box model
-
-          var target_tl_x = 0.0;
-          var target_tl_y = 0.0;
-          var target_br_x = target_tl_x + texture_width;
-          var target_br_y = target_tl_y + texture_height;
-          var targetTextureWidth = texture_width;
-          var targetTextureHeight = texture_height;
-
-          var targetX1 = target_tl_x / texture_width;
-          var targetX2 = target_br_x / texture_width;
-          var targetY1 = target_tl_y / texture_height;
-          var targetY2 = target_br_y / texture_height;
-
-          console.log("targetX1:" + targetX1);
-          console.log("targetX2:" + targetX2);
-          console.log("targetY1:" + targetY1);
-          console.log("targetY2:" + targetY2);
-          var poscoordX1 = targetX1 * 2.0 - 1.0;
-          var poscoordX2 = targetX2 * 2.0 - 1.0;
-          var poscoordY1 = targetY2 * 2.0 - 1.0;
-          var poscoordY2 = targetY1 * 2.0 - 1.0;
-
-          var positionBuffer3 = gl.createBuffer();
-          // Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
-          gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer3);
-
-          gl.bufferData(
-            gl.ARRAY_BUFFER,
-            new Float32Array([
-              poscoordX1,
-              poscoordY1,
-              poscoordX2,
-              poscoordY1,
-              poscoordX1,
-              poscoordY2,
-              poscoordX1,
-              poscoordY2,
-              poscoordX2,
-              poscoordY1,
-              poscoordX2,
-              poscoordY2
-            ]),
-            gl.STATIC_DRAW
-          );
-
-          var texcoordBuffer3 = gl.createBuffer();
-          gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer3);
-          gl.bufferData(
-            gl.ARRAY_BUFFER,
-            new Float32Array([
-              targetX1,
-              targetY1,
-              targetX2,
-              targetY1,
-              targetX1,
-              targetY2,
-              targetX1,
-              targetY2,
-              targetX2,
-              targetY1,
-              targetX2,
-              targetY2
-            ]),
-            gl.STATIC_DRAW
-          );
-
-          const targetTexture = gl.createTexture();
-          gl.bindTexture(gl.TEXTURE_2D, targetTexture);
-
-          
-            // define size and format of level 0
-            const level = 0;
-            const internalFormat = gl.RGBA;
-            const border = 0;
-            const format = gl.RGBA;
-            const glType = gl.UNSIGNED_BYTE;
-            const data = null;
-            gl.texImage2D(
-              gl.TEXTURE_2D,
-              level,
-              internalFormat,
-              targetTextureWidth,
-              targetTextureHeight,
-              border,
-              format,
-              glType,
-              data
-            );
-
-            // set the filtering so we don't need mips
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-            gl.texParameteri(
-              gl.TEXTURE_2D,
-              gl.TEXTURE_WRAP_S,
-              gl.CLAMP_TO_EDGE
-            );
-            gl.texParameteri(
-              gl.TEXTURE_2D,
-              gl.TEXTURE_WRAP_T,
-              gl.CLAMP_TO_EDGE
-            );
-
-            // Create and bind the framebuffer
-            const fb = gl.createFramebuffer();
-            gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
-
-            // attach the texture as the first color attachment
-            const attachmentPoint = gl.COLOR_ATTACHMENT0;
-            gl.framebufferTexture2D(
-              gl.FRAMEBUFFER,
-              attachmentPoint,
-              gl.TEXTURE_2D,
-              targetTexture,
-              level
-            );
-
-            // Set viewport to target size
-            gl.viewport(0, 0, targetTextureWidth, targetTextureHeight);
-
-            // Clear the attachment(s).
-            gl.clearColor(0, 0, 0, 0);
-            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-            // 3. Draw photo texture
-         
-            scaleMatrix = m3.scaling(1.0, 1.0);
-            // Set the matrix.
-            gl.uniformMatrix3fv(matrixLocation, false, scaleMatrix);
-
-            gl.uniform1i(u_image0Location, 0); // texture unit 0
-
-            gl.activeTexture(gl.TEXTURE0);
-            gl.bindTexture(gl.TEXTURE_2D, textures[1]);
-
-            gl.enableVertexAttribArray(texcoordLocation);
-            gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer2);
-            var size = 2; // 2 components per iteration
-            var type = gl.FLOAT; // the data is 32bit floats
-            var normalize = false; // don't normalize the data
-            var stride = 0; // 0 = move forward size * sizeof(type) each iteration to get the next position
-            var offset = 0; // start at the beginning of the buffer
-            gl.vertexAttribPointer(
-              texcoordLocation,
-              size,
-              type,
-              normalize,
-              stride,
-              offset
-            );
-
-            gl.enableVertexAttribArray(positionLocation);
-            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer3);
-
-            gl.vertexAttribPointer(
-              positionLocation,
-              size,
-              type,
-              normalize,
-              stride,
-              offset
-            );
-
-            //Draw the rectangle.
-            gl.drawArrays(gl.TRIANGLES, 0, 6);
-          
-
-          // render to canvas
-          gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-
-          gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-
-          // Clear the canvas
-          gl.clearColor(0, 0, 0, 0);
-          gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-          // Tell it to use our program (pair of shaders)
-          //gl.useProgram(program);
-
-          // 2. Draw model uv texture
-
-          // Turn on the position attribute
-          gl.enableVertexAttribArray(positionLocation);
-
-          // Bind the position buffer.
-          gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-
-          // Tell the position attribute how to get data out of positionBuffer (ARRAY_BUFFER)
-          var size = 2; // 2 components per iteration
-          var type = gl.FLOAT; // the data is 32bit floats
-          var normalize = false; // don't normalize the data
-          var stride = 0; // 0 = move forward size * sizeof(type) each iteration to get the next position
-          var offset = 0; // start at the beginning of the buffer
-          gl.vertexAttribPointer(
-            positionLocation,
-            size,
-            type,
-            normalize,
-            stride,
-            offset
-          );
-
-          // Turn on the texcoord attribute
-          gl.enableVertexAttribArray(texcoordLocation);
-
-          // bind the texcoord buffer.
-          gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
-
-          // Tell the texcoord attribute how to get data out of texcoordBuffer (ARRAY_BUFFER)
-          // var size = 2;          // 2 components per iteration
-          // var type = gl.FLOAT;   // the data is 32bit floats
-          // var normalize = false; // don't normalize the data
-          // var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
-          // var offset = 0;        // start at the beginning of the buffer
-          gl.vertexAttribPointer(
-            texcoordLocation,
-            size,
-            type,
-            normalize,
-            stride,
-            offset
-          );
-
-          var scaleMatrix = m3.scaling(1.0, 1.0);
-          // Set the matrix.
-          gl.uniformMatrix3fv(matrixLocation, false, scaleMatrix);
-
-          // set which texture units to render with.
-          gl.uniform1i(u_image0Location, 0); // texture unit 0
-
-          // Set each texture unit to use a particular texture.
-          gl.activeTexture(gl.TEXTURE0);
-          gl.bindTexture(gl.TEXTURE_2D, textures[0]);
-
-          //Draw the rectangle.
-          gl.drawArrays(gl.TRIANGLES, 0, 6);
-
-          // 3. Draw photo texture
-      
-          var scaleMatrixFlipY = m3.scaling(1.0 * isFlipPictureX, 1.0 * isFlipPictureY);
-          // Set the matrix.
-          gl.uniformMatrix3fv(matrixLocation, false, scaleMatrixFlipY);
-
-          gl.activeTexture(gl.TEXTURE0);
-          gl.bindTexture(gl.TEXTURE_2D, targetTexture);
-
-          gl.enableVertexAttribArray(texcoordLocation);
-          gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer3);
-          gl.vertexAttribPointer(
-            texcoordLocation,
-            size,
-            type,
-            normalize,
-            stride,
-            offset
-          );
-
-          gl.enableVertexAttribArray(positionLocation);
-          gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer3);
-          gl.vertexAttribPointer(
-            positionLocation,
-            size,
-            type,
-            normalize,
-            stride,
-            offset
-          );
-
-          //Draw the rectangle.
-          gl.drawArrays(gl.TRIANGLES, 0, 6);
-
-          // 4. Output canvas to image png data URL
-
-          let saveCanvas = document.getElementById("canvas");
-          let dataURL = saveCanvas.toDataURL("image/png");
-
-          var image = new Image();
-          requestCORSIfNotSameOrigin(image, dataURL);
-          image.src = dataURL;
-
-          imagesNew[j] = image;
-
-          gl.deleteBuffer(positionBuffer);
-          gl.deleteBuffer(texcoordBuffer);
-          gl.deleteBuffer(positionBuffer2);
-          gl.deleteBuffer(texcoordBuffer2);
-          // gl.deleteBuffer(positionBuffer3);
-          // gl.deleteBuffer(texcoordBuffer3);
-          
-          gl.deleteTexture(targetTexture);
-          for (var k = 0; k < textures.length; ++k) {
-            gl.deleteTexture(textures[k]);
-          }
-          gl.deleteFramebuffer(fb);
-
-        }
-        gl.deleteProgram(program);
-        
-        var displayWidth = window.innerWidth;
-        // if (displayWidth > 2400){
-        //   displayWidth = 2400;
-        // }
-        document.getElementById("canvas").width = displayWidth;
-        document.getElementById("canvas").height = window.innerHeight;
-        console.log("window.innerWidth:" + window.innerWidth);
-        return imagesNew;
-      }
-
-      var m3 = {
-        translation: function(tx, ty) {
-          return [1, 0, 0, 0, 1, 0, tx, ty, 1];
-        },
-
-        rotation: function(angleInRadians) {
-          var c = Math.cos(angleInRadians);
-          var s = Math.sin(angleInRadians);
-          return [c, -s, 0, s, c, 0, 0, 0, 1];
-        },
-
-        scaling: function(sx, sy) {
-          return [sx, 0, 0, 0, sy, 0, 0, 0, 1];
-        },
-
-        multiply: function(a, b) {
-          var a00 = a[0 * 3 + 0];
-          var a01 = a[0 * 3 + 1];
-          var a02 = a[0 * 3 + 2];
-          var a10 = a[1 * 3 + 0];
-          var a11 = a[1 * 3 + 1];
-          var a12 = a[1 * 3 + 2];
-          var a20 = a[2 * 3 + 0];
-          var a21 = a[2 * 3 + 1];
-          var a22 = a[2 * 3 + 2];
-          var b00 = b[0 * 3 + 0];
-          var b01 = b[0 * 3 + 1];
-          var b02 = b[0 * 3 + 2];
-          var b10 = b[1 * 3 + 0];
-          var b11 = b[1 * 3 + 1];
-          var b12 = b[1 * 3 + 2];
-          var b20 = b[2 * 3 + 0];
-          var b21 = b[2 * 3 + 1];
-          var b22 = b[2 * 3 + 2];
-          return [
-            b00 * a00 + b01 * a10 + b02 * a20,
-            b00 * a01 + b01 * a11 + b02 * a21,
-            b00 * a02 + b01 * a12 + b02 * a22,
-            b10 * a00 + b11 * a10 + b12 * a20,
-            b10 * a01 + b11 * a11 + b12 * a21,
-            b10 * a02 + b11 * a12 + b12 * a22,
-            b20 * a00 + b21 * a10 + b22 * a20,
-            b20 * a01 + b21 * a11 + b22 * a21,
-            b20 * a02 + b21 * a12 + b22 * a22
-          ];
-        }
+        return scene;
       };
 
-      // This is needed if the images are not on the same domain
-      // NOTE: The server providing the images must give CORS permissions
-      // in order to be able to use the image with WebGL. Most sites
-      // do NOT give permission.
-      // See: https://webglfundamentals.org/webgl/lessons/webgl-cors-permission.html
-      function requestCORSIfNotSameOrigin(img, url) {
-        if (
-          new URL(url, window.location.href).origin !== window.location.origin
-        ) {
-          img.crossOrigin = "";
-        }
-      }
-
-      
-      function renderModel(modelMeshUrl, modelUVTextureUrl, imageUrl){
-          renderMesh(
-            modelMeshUrl,
-            modelUVTextureUrl,
-            imageUrl,            
-            render
-          );
-      }
-      
-      // Render Model API
-      
-      renderModel(
-        "assets/e-cigarette/",
-        [
-          "assets/e-cigarette/front-cover-blue-UV.png",
-        ],
-        [
-          "assets/e-cigarette/front-cover-logo.png",
-        ]
-      );
+      var scene = createScene();
+      engine.runRenderLoop(function() {
+        scene.render();
+      });
     </script>
   </body>
 </html>
